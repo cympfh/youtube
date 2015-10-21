@@ -1,0 +1,144 @@
+<html>
+  <head>
+    <meta charset="UTF-8">
+<title>
+@TITLE
+</title>
+<style>
+  body {
+    background-color: #1b1b1b;
+  }
+  center.player {
+    z-index: 7;
+    width: 100%;
+    position: fixed;
+    left: 0;
+    top: 10px;
+    padding: 0;
+    margin: 20px 0 0 0;
+    pointer-events: none;
+  }
+  iframe#player {
+    pointer-events: auto;
+  }
+  div#ground {
+    padding: 0;
+    margin: 420px 0 0 0;
+  }
+  img {
+    z-index: 1;
+    position: relative;
+    left: 0;
+    top: 0;
+  }
+  img:hover {
+    border: 3px yellow solid;
+  }
+  img.playing {
+    border: 7px #ff7777 solid;
+  }
+  footer {
+    text-align: center;
+    position: fixed;
+    font-size: 8px;
+    width: 100%;
+    height: 14px;
+    bottom: 0;
+    left: 0;
+    z-index: 10;
+    background-color: black;
+    color: white;
+    font-family: monospace;
+    opacity: 0.5;
+  }
+  footer > a {
+    color: #cccccc;
+  }
+</style>
+<script>
+  var list =
+@LIST
+;
+  var idx = 0;
+</script>
+  </head>
+
+  <body>
+    <center class="player"><div id="player"></div></center>
+    <div id="ground"></div>
+    <script>
+      var tag = document.createElement('script');
+      tag.src = "https://www.youtube.com/iframe_api";
+      var firstScriptTag = document.getElementsByTagName('script')[0];
+      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+      var player;
+      function onYouTubeIframeAPIReady() {
+        player = new YT.Player('player', {
+          height: '390',
+          width: '640',
+          events: {
+            'onReady': onPlayerReady,
+            'onStateChange': onPlayerStateChange,
+            'onError': onPlayerError
+          }
+        });
+      }
+
+      function stop() {
+        if (idx >= 0) {
+          var cn = document.getElementById("image" + idx).className;
+          document.getElementById("image" + idx).className = cn.replace(' playing', '');
+        }
+      }
+
+      function nextCue() {
+        idx = (idx + 1) % list.length;
+        player.cueVideoById(list[idx][0], 0, 'large');
+        document.getElementById("image" + idx).className += ' playing';
+        player.playVideo();
+      }
+
+      var htmlTitle;
+      function onPlayerReady(event) {
+        htmlTitle = document.title;
+        idx = -1; nextCue();
+      }
+
+      function onPlayerStateChange(event) {
+        if (event.data == YT.PlayerState.PLAYING) {
+          document.title = "▶ " + htmlTitle;
+        } else {
+          document.title = htmlTitle;
+        }
+        if (event.data == YT.PlayerState.ENDED) {
+          stop();
+          nextCue();
+        }
+      }
+      function stopVideo() {
+        player.stopVideo();
+      }
+      function onPlayerError(err) {
+        stop();
+        nextCue();
+      }
+
+      (function () {
+        var i = 0;
+        for (; i < list.length; ++i) {
+          var image = document.createElement('img');
+          image.src = "https://i.ytimg.com/vi/" + list[i][0] + "/mqdefault.jpg";
+          image.title = list[i][1];
+          var deg = ((Math.random() * 40) | 0) - 20;
+          image.style.transform = 'rotate(' + deg + 'deg)';
+          image.onclick = (function(j) { return function() { stop(); idx = j-1; nextCue(); }; }(i));
+          image.id = "image" + i;
+          ground.appendChild(image);
+        }
+      }());
+
+    </script>
+
+    <footer>This player was written by <a href="http://twitter.com/cympfh">@cympfh</a> using YouTube's <a href="https://developers.google.com/youtube/iframe_api_reference?hl=ja#Playback_controls">IFrame API</a>. The support browsers are listed up in <a href="http://caniuse.com/#feat=pointer-events">this page</a>.</footer>
+  </body>
+</html>

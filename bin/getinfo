@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# Usage:
+#   getinfo <video-id>
+# or
+#   echo <video-id>  | getinfo
+ 
+
+if [ $# -gt 0 ]
+then
+  for $ID in $@; do
+TITLE=$( curl -s https://www.youtube.com/watch?v=$ID | grep '<title>' | sed 's#.*<title>\(.*\)</title>.*#\1#' | sed 's/-\? \?YouTube$//g' )
+TITLE=$( ruby -e "require 'cgi'; puts CGI.unescapeHTML('$TITLE'.chomp)" )
+echo $ID $TITLE
+  done
+else
+  while read ID; do
+TITLE=$( curl -s https://www.youtube.com/watch?v=$ID | grep '<title>' | sed 's#.*<title>\(.*\)</title>.*#\1#' | sed 's/-\? \?YouTube$//g' )
+TITLE=$( ruby -e "require 'cgi'; puts CGI.unescapeHTML('$TITLE'.chomp)" )
+echo $ID $TITLE
+  done
+fi
