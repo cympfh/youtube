@@ -3,7 +3,7 @@
 url = process.argv[2]
 
 if not url
-  console.warn "usage: ./% url"
+  console.warn "usage: #{process.argv[1]} url"
   process.exit 0
 
 id =
@@ -13,8 +13,10 @@ id =
 
 kwds = [
   '第三者通報が複数寄せられたため削除'
+  'から著作権侵害の申し立てがあったため削除されました'
   'This video is unavailable'
   'アカウントが停止されたため'
+  'この動画は存在しません'
 ]
 
 {exec} = require 'child_process'
@@ -25,6 +27,7 @@ exec "curl -s https://www.youtube.com/watch?v=#{id} > /tmp/html", (er, out) ->
   fs.readFile '/tmp/html', 'utf8', (er, out) ->
     throw er if er
     bl = kwds.some (kwd) -> (out.indexOf kwd) isnt -1
-    console.log if bl then 1 else 0
+    if bl
+      process.exit 1
 
 # vim: set ft=coffee:

@@ -1,24 +1,4 @@
-#!/usr/bin/env ruby
+#!/bin/bash
 
-if ARGV.length != 1
-  puts "play <playlist>"
-  exit 0
-end
-
-playlist = ARGV[0]
-
-ls = File.read(playlist).chomp.split("\n").map { |line|
-  xs = line.split(" ")
-  id = xs[0]
-  title = xs[1..-1].join(' ').chomp.gsub('"', '\\"')
-  "[ \"#{id}\", \"#{title}\" ]"
-}.join(", ")
-ls = "[ #{ls} ]"
-
-File.read('resources/index.html').chomp.split("\n").each { |line|
-  case line
-  when "@TITLE" then puts playlist
-  when "@LIST" then puts ls
-  else puts line
-  end
-}
+bin/htmlplayer $1 > /tmp/$(basename $1).html
+firefox /tmp/$(basename $1).html &

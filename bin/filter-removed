@@ -1,0 +1,30 @@
+#!/bin/bash
+
+# remove the id of removed movies
+# from a playlist file
+
+[ $# -ne 1 ] && echo "Usage: $0 <playlist>" && exit 0
+
+BK=/tmp/${1##*/}
+cp $1 $BK
+> $1.tmp
+
+N=0
+while read ln; do
+  id=${ln%% *}
+  if [ "_${id}" = "_#" ]; then
+    echo $ln >> $1.tmp
+  elif ./bin/removed $id ; then
+    echo $ln >> $1.tmp
+  else
+    echo $ln
+    echo "# $ln" >> $1.tmp
+    N=$(( $N + 1 ))
+  fi
+done < $1
+
+mv $1.tmp $1
+
+echo "$N lines are commented out"
+echo "overwritten: $1"
+echo "backup: $BK"
