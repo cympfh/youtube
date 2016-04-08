@@ -9,6 +9,7 @@ if [ $# -gt 0 ]
 then
   for ID in $@; do
     ID=${ID##*?=}
+    ID=${ID##*/}
     TITLE=$( curl -s https://www.youtube.com/watch?v=$ID | grep '<title>' | sed 's#.*<title>\(.*\)</title>.*#\1#' | sed 's/-\? \?YouTube$//g' )
     TITLE=$( ruby -e "require 'cgi'; puts CGI.unescapeHTML('$TITLE'.chomp)" )
     echo $ID $TITLE
@@ -16,6 +17,7 @@ then
 else
   while read ID; do
     ID=${ID##*?=}
+    ID=${ID##*/}
     TITLE=$( curl -s https://www.youtube.com/watch?v=$ID | grep '<title>' | sed 's#.*<title>\(.*\)</title>.*#\1#' | sed 's/-\? \?YouTube$//g' )
     TITLE=$( ruby -e "require 'cgi'; puts CGI.unescapeHTML('$TITLE'.chomp)" )
     echo $ID $TITLE

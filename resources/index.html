@@ -31,10 +31,10 @@
     position: relative;
     left: 0;
     top: 0;
-    opacity: 0.5;
+    opacity: 0.3;
   }
   img:hover {
-    opacity: 0.9;
+    opacity: 0.6;
     z-index: 3 !important;
   }
   img.playing {
@@ -44,7 +44,6 @@
   footer {
     text-align: center;
     position: fixed;
-    font-size: 16px;
     width: 100%;
     bottom: 0;
     left: 0;
@@ -166,13 +165,18 @@
         idx = -1;
         setTimeout(nextCue, 100);
       }
+      if (location.hash === '#shuffle') {
+        shuffle_list();
+      }
     </script>
 
     <footer id='footer'>
       <div id='contextmenu' class='contextmenu'>
         <a onclick='shuffle_list()'>shuffle</a>
       </div>
-      This player was written by <a href="http://twitter.com/cympfh">@cympfh</a> using YouTube's <a href="https://developers.google.com/youtube/iframe_api_reference?hl=ja#Playback_controls">IFrame API</a>. The support browsers are listed up in <a href="http://caniuse.com/#feat=pointer-events">this page</a>.
+This player was written by <a href="http://twitter.com/cympfh">cympfh</a> with <a href="https://developers.google.com/youtube/iframe_api_reference?hl=ja#Playback_controls">IFrame API</a>.
+You can get HTML template of this player from <a href="https://gist.github.com/cympfh/28f760c9f5f3fa7108a1">gist</a>.
+The support browsers are listed up in <a href="http://caniuse.com/#feat=pointer-events">this page</a>.
     </footer>
 
     <script>

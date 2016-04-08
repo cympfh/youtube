@@ -1,4 +1,24 @@
 #!/bin/bash
 
-bin/htmlplayer $1 > /tmp/$(basename $1).html
-firefox /tmp/$(basename $1).html &
+ARG=_$1
+
+if [ $ARG == "_" -o  $ARG == "_--help" -o $ARG == "_-h" ]; then
+  echo SYNOPSIS
+  echo "  play file"
+  echo "  play --shuffle file"
+  exit 0
+fi
+
+OPEN=open
+which firefox && OPEN=firefox
+
+if [ $ARG == "_--shuffle" ]; then
+  HTML=/tmp/$(basename $2).html
+  bin/htmlplayer $2 >$HTML
+  $OPEN "file://$HTML#shuffle" 2>/dev/null &
+else
+  HTML=/tmp/$(basename $1).html
+  bin/htmlplayer $1 >$HTML
+  $OPEN "file://$HTML" 2>/dev/null &
+fi
+
