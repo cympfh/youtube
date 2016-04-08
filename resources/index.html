@@ -55,11 +55,16 @@
   footer > a {
     color: #cccccc;
   }
-  footer > .contextmenu {
-    margin: 2px;
-    cursor: pointer;
-    font-size: 18px;
-    display: none;
+  input#conpane {
+    background: transparent;
+    border: 1px #ddd solid;
+    color: white;
+    opacity: 0.2;
+    padding: 4px;
+    width: 5em;
+    position: fixed;
+    top: 10px;
+    left: 10px;
   }
 </style>
 <script>
@@ -98,6 +103,21 @@
         }
       }
 
+      function toggle() {
+        if (player.getPlayerState() == 1) {
+          player.pauseVideo();
+        } else {
+          player.playVideo();
+        }
+      }
+
+      function prevCue() {
+        idx = (idx + list.length - 1) % list.length;
+        player.cueVideoById(list[idx][0], 0, 'large');
+        document.getElementById("image" + idx).className += ' playing';
+        player.playVideo();
+      }
+
       function nextCue() {
         idx = (idx + 1) % list.length;
         player.cueVideoById(list[idx][0], 0, 'large');
@@ -107,25 +127,17 @@
 
       var htmlTitle;
       function onPlayerReady(event) {
-        htmlTitle = document.title;
         idx = -1;
         setTimeout(nextCue, 100);
       }
 
       function onPlayerStateChange(event) {
-        if (event.data == YT.PlayerState.PLAYING) {
-          document.title = "▶ " + htmlTitle;
-        } else {
-          document.title = htmlTitle;
-        }
         if (event.data == YT.PlayerState.ENDED) {
           stop();
           setTimeout(nextCue, 100);
         }
       }
-      function stopVideo() {
-        player.stopVideo();
-      }
+
       function onPlayerError(err) {
         stop();
         nextCue();
@@ -170,22 +182,38 @@
       }
     </script>
 
-    <footer id='footer'>
-      <div id='contextmenu' class='contextmenu'>
-        <a onclick='shuffle_list()'>shuffle</a>
-      </div>
-This player was written by <a href="http://twitter.com/cympfh">cympfh</a> with <a href="https://developers.google.com/youtube/iframe_api_reference?hl=ja#Playback_controls">IFrame API</a>.
-You can get HTML template of this player from <a href="https://gist.github.com/cympfh/28f760c9f5f3fa7108a1">gist</a>.
-The support browsers are listed up in <a href="http://caniuse.com/#feat=pointer-events">this page</a>.
-    </footer>
+    <form action='none'>
+      <input type='text' id='conpane' />
+    </form>
 
     <script>
-document.getElementById('footer').addEventListener('mouseover', function(e) {
-  document.getElementById('contextmenu').style.display = 'block';
+var CP = document.getElementById('conpane');
+CP.value = 'Search';
+
+CP.addEventListener('keyup', function (e) {
+  CP.value = 'Search';
+  switch (e.keyCode) {
+  case 188:
+    stop();
+    setTimeout(prevCue, 100);
+    break;
+  case 190:
+    stop();
+    setTimeout(nextCue, 100);
+    break;
+  case 191:
+    if (location.hash !== '') {
+      location.reload();
+    } else {
+      location.href = location.href + '#shuffle';
+    }
+    break;
+  case 32:
+    toggle();
+    break;
+  }
 });
-document.getElementById('footer').addEventListener('mouseout', function(e) {
-  document.getElementById('contextmenu').style.display = 'none';
-});
+
     </script>
 
   </body>
