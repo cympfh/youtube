@@ -1,24 +1,61 @@
-#!/bin/bash
+#!/usr/bin/env ruby
 
-ARG=_$1
+require 'optparse'
 
-if [ $ARG == "_" -o  $ARG == "_--help" -o $ARG == "_-h" ]; then
-  echo SYNOPSIS
-  echo "  play file"
-  echo "  play --shuffle file"
-  exit 0
-fi
+def usage
+    puts <<EOM
+Usage: ./play [options...] [playlist...]
 
-OPEN=open
-which firefox && OPEN=firefox
+options:
+    -o <file>     output html
+    --shuffle     shuffle mode
+    --open        open the html file on your browser
+    --help        print this
 
-if [ $ARG == "_--shuffle" ]; then
-  HTML=/tmp/$(basename $2).html
-  bin/htmlplayer $2 >$HTML
-  $OPEN "file://$HTML#shuffle" 2>/dev/null &
-else
-  HTML=/tmp/$(basename $1).html
-  bin/htmlplayer $1 >$HTML
-  $OPEN "file://$HTML" 2>/dev/null &
-fi
+playlist:
+    playlist files
+    if none is specified, stdin will be read
+EOM
+    exit
+end
 
+args = ARGV.getopts('o:', 'shuffle', 'open', 'help')
+usage if args['help']
+
+playlists = ARGV
+if playlists.length == 0
+    playlists << '/dev/stdin'
+end
+
+out = args['o']
+out = '/dev/stdout' if out == nil
+
+File.open(out, 'w') {|f|
+    ls = []
+
+    for pl in playlists
+        File.read(pl).chomp.split("\n").select {|line|
+              line != '' and line[0] != '#'
+        }.each {|line|
+          xs = line.split(" ")
+          id = xs[0]
+          title = xs[1..-1].join(' ').chomp.gsub('"', '\\"')
+          ls << "[ \"#{id}\", \"#{title}\" ]"
+        }
+    end
+
+    ls = "[ #{ls.join(',')} ]"
+
+    File.read('template/index.html').chomp.split("\n").each { |line|
+      case line
+      when "@TITLE" then f.puts playlists.join('+')
+      when "@LIST" then f.puts ls
+      else f.puts line
+      end
+    }
+}
+
+open_file = "file://#{out}#{args['shuffle'] ? "#shuffle" : ""}"
+if args['o'] and args['open']
+    `firefox #{open_file} || open -a Firefox #{open_file}`
+end

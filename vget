@@ -1,0 +1,40 @@
+#!/bin/bash
+
+usage() {
+    cat << EOM
+Usage:
+    ./vget <list-page-url or video-page-url>
+EOM
+    exit 0
+}
+
+if [ $# -eq 0 -o "$1" == "-h" -o "$1" == "--help" ]; then 
+    usage
+fi
+
+video() {
+    ID=$1
+    ID=${ID##*?=}
+    ID=${ID##*/}
+    TITLE=$( curl -s "https://www.youtube.com/watch?v=$ID" | grep '<title>' | sed 's#.*<title>\(.*\)</title>.*#\1#' | sed 's/-\? \?YouTube$//g' )
+    TITLE=$( ruby -e "require 'cgi'; puts CGI.unescapeHTML('$TITLE'.chomp)" )
+    echo "$ID $TITLE"
+}
+
+list() {
+    ID=$(echo "$1" | grep -o 'list=[^\&\#]*' | sed 's/list=//g')
+    curl -s "https://www.youtube.com/playlist?list=${ID}" |
+    grep 'watch?v=' | sed 's/^.*watch\?//' |
+    cut -d'=' -f2 | cut -d'&' -f1 | uniq
+}
+
+case "$1" in
+    *list=* )
+        for id in $(list "$1"); do
+            video "$id"
+        done
+        ;;
+    * )
+        video "$1"
+        ;;
+esac
