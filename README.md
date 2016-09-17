@@ -4,13 +4,13 @@
 
 ### play with playlist files
 
-The below command make a HTML for `playlist1` and `playlist2` in `shuffle mode`, save as `/tmp/out.html`, then `open` the HTML.
+The below command make a HTML for `playlist1` and `playlist2` in `shuffle` mode, save as `/tmp/out.html`, then `open` the HTML.
 
 ```bash
 ./play -o /tmp/out.html --open --shuffle playlist1 playlist2
 ```
 
-### make playlist from `/playlist` page
+### make your playlist from a `/playlist` page
 
 ```bash
 ./vget 'https://www.youtube.com/playlist?list=PLV1VKKSui4LHL2aiQV-K_CLg6bwj45u-F' > playlist
@@ -19,7 +19,7 @@ The below command make a HTML for `playlist1` and `playlist2` in `shuffle mode`,
 ### fetch a video
 
 ```bash
-./vget 'https://www.youtube.com/watch?v=kZmk8PxjhnY'
+./vget 'https://www.youtube.com/watch?v=kZmk8PxjhnY' >> playlist
 ```
 
 ### N.B.
