@@ -28,7 +28,14 @@ if playlists.length == 0
 end
 
 out = args['o']
-out = '/dev/stdout' if out == nil
+
+if not out
+    if args['open']
+        out = `mktemp`.chomp
+    else
+        out = '/dev/stdout'
+    end
+end
 
 File.open(out, 'w') {|f|
     ls = []
@@ -55,7 +62,8 @@ File.open(out, 'w') {|f|
     }
 }
 
-open_file = "file://#{out}#{args['shuffle'] ? "#shuffle" : ""}"
-if args['o'] and args['open']
+if args['open']
+    open_file = "file://#{out}#{args['shuffle'] ? "#shuffle" : ""}"
+    STDERR.puts "open #{open_file}"
     `firefox #{open_file} || open -a Firefox #{open_file}`
 end
