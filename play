@@ -45,7 +45,6 @@ File.open(out, 'w') {|f|
         File.read(pl).chomp.split("\n").select {|line|
             line != '' and line[0] != '#'
         }.each {|line|
-            p line
             xs = line.split(" ")
             id = xs[0]
             title = xs[1..-1].join(' ').chomp.gsub('"', '\\"')
