@@ -7,7 +7,6 @@ def usage
 Usage: ./play [options...] [playlist...]
 
 options:
-    -o <file>     output html
     --shuffle     shuffle mode
     --open, -O    open the html file on your browser
     --help        print this
@@ -19,7 +18,7 @@ EOM
     exit
 end
 
-args = ARGV.getopts('o:O', 'shuffle', 'open', 'help')
+args = ARGV.getopts('O', 'shuffle', 'open', 'help')
 usage if args['help']
 args['open'] |= args['O']
 
@@ -29,13 +28,10 @@ if playlists.length == 0
 end
 STDERR.puts "playlists: #{playlists.join}"
 
-out = args['o']
-if not out
-    if args['open']
-        out = `mktemp`.chomp
-    else
-        out = '/dev/stdout'
-    end
+if args['open']
+    out = `mktemp`.chomp
+else
+    out = '/dev/stdout'
 end
 
 File.open(out, 'w') {|f|
