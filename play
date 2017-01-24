@@ -7,9 +7,8 @@ def usage
 Usage: ./play [options...] [playlist...]
 
 options:
-    -o <file>     output html
     --shuffle     shuffle mode
-    --open        open the html file on your browser
+    --open, -O    open the html file on your browser
     --help        print this
 
 playlist:
@@ -19,43 +18,49 @@ EOM
     exit
 end
 
-args = ARGV.getopts('o:', 'shuffle', 'open', 'help')
+args = ARGV.getopts('O', 'shuffle', 'open', 'help')
 usage if args['help']
+args['open'] |= args['O']
 
 playlists = ARGV
 if playlists.length == 0
     playlists << '/dev/stdin'
 end
+STDERR.puts "playlists: #{playlists.join}"
 
-out = args['o']
-out = '/dev/stdout' if out == nil
+if args['open']
+    out = `mktemp`.chomp
+else
+    out = '/dev/stdout'
+end
 
 File.open(out, 'w') {|f|
     ls = []
 
     for pl in playlists
         File.read(pl).chomp.split("\n").select {|line|
-              line != '' and line[0] != '#'
+            line != '' and line[0] != '#'
         }.each {|line|
-          xs = line.split(" ")
-          id = xs[0]
-          title = xs[1..-1].join(' ').chomp.gsub('"', '\\"')
-          ls << "[ \"#{id}\", \"#{title}\" ]"
+            xs = line.split(" ")
+            id = xs[0]
+            title = xs[1..-1].join(' ').chomp.gsub('"', '\\"')
+            ls << "[ \"#{id}\", \"#{title}\" ]"
         }
     end
 
     ls = "[ #{ls.join(',')} ]"
 
     File.read('template/index.html').chomp.split("\n").each { |line|
-      case line
-      when "@TITLE" then f.puts playlists.join('+')
-      when "@LIST" then f.puts ls
-      else f.puts line
-      end
+        case line
+        when "@TITLE" then f.puts playlists.join('+')
+        when "@LIST" then f.puts ls
+        else f.puts line
+        end
     }
 }
 
-open_file = "file://#{out}#{args['shuffle'] ? "#shuffle" : ""}"
-if args['o'] and args['open']
+if args['open']
+    open_file = "file://#{out}#{args['shuffle'] ? "#shuffle" : ""}"
+    STDERR.puts "open #{open_file}"
     `firefox #{open_file} || open -a Firefox #{open_file}`
 end
