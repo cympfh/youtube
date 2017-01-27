@@ -17,7 +17,7 @@ video() {
     ID=${ID##*?=}
     ID=${ID##*/}
     TITLE=$( curl -s "https://www.youtube.com/watch?v=$ID" | grep '<title>' | sed 's#.*<title>\(.*\)</title>.*#\1#' | sed 's/-\? \?YouTube$//g' )
-    TITLE=$( ruby -e "require 'cgi'; puts CGI.unescapeHTML('$TITLE'.chomp)" )
+    TITLE=$( ruby -e "require 'cgi'; puts CGI.unescapeHTML('$TITLE'.strip)" )
     echo "$ID $TITLE"
 }
 
