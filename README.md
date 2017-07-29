@@ -1,28 +1,18 @@
 # YouTube playlist
 
-## Tools
-
-### play with playlist files
-
-The below command make a HTML for `playlist1` and `playlist2` in `shuffle` mode, save as `/tmp/out.html`, then `open` the HTML.
+## play playlist files
 
 ```bash
-./play -o /tmp/out.html --open --shuffle playlist1 playlist2
+./play -o --shuffle playlist1 playlist2
 ```
 
-### make your playlist from a `/playlist` page
+## make your playlist
 
 ```bash
-./vget 'https://www.youtube.com/playlist?list=PLV1VKKSui4LHL2aiQV-K_CLg6bwj45u-F' > playlist
+# from playlist url
+./get https://www.youtube.com/playlist?list=PLV1VKKSui4LHL2aiQV-K_CLg6bwj45u-F >> playlist
+
+# from a music page url
+./get https://www.youtube.com/watch?v=kZmk8PxjhnY >> playlist
 ```
-
-### fetch a video
-
-```bash
-./vget 'https://www.youtube.com/watch?v=kZmk8PxjhnY' >> playlist
-```
-
-### N.B.
-
-`vget` command deal with the url as playlist page if the url contains `list=`.
 
