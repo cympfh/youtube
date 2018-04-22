@@ -1,3 +1,5 @@
+**This project moved to [cympfh/mls](https://github.com/cympfh/mls).**
+
 # YouTube playlist
 
 ## play playlist files
